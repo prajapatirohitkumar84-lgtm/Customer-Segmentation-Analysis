@@ -4,35 +4,64 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-df = pd.read_csv(r"D:\Project (Navodita infotech)\Customer Segmentation Analysis-[Rohit Kumar Prajapati]\train.csv")
-
-st.title("Customer Segmentation Dashboard")
-st.dataframe(df)
-
-
-# -----------------------------
-# Page Configuration
-# -----------------------------
+# =====================================================
+# PAGE CONFIGURATION
+# =====================================================
 st.set_page_config(
     page_title="Customer Segmentation Dashboard",
     page_icon="📊",
     layout="wide"
 )
 
-# -----------------------------
-# Load Dataset
-# -----------------------------
+# =====================================================
+# CUSTOM CSS
+# =====================================================
+st.markdown("""
+<style>
+.main{
+    background-color:#f8f9fa;
+}
+
+h1,h2,h3{
+    color:#0E4D92;
+}
+
+div[data-testid="metric-container"]{
+    background:#ffffff;
+    border-radius:12px;
+    padding:15px;
+    border:1px solid #dddddd;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sidebar .sidebar-content{
+    background:#0E4D92;
+}
+
+footer{
+    visibility:hidden;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =====================================================
+# LOAD DATA
+# =====================================================
 @st.cache_data
 def load_data():
     return pd.read_csv("clustered_customers.csv")
 
 df = load_data()
 
-# -----------------------------
-# Sidebar
-# -----------------------------
-st.sidebar.title("📂 Navigation")
+# =====================================================
+# SIDEBAR
+# =====================================================
+st.sidebar.image(
+    "https://img.icons8.com/color/96/combo-chart--v1.png",
+    width=90
+)
+
+st.sidebar.title("Navigation")
 
 menu = st.sidebar.radio(
     "Select Page",
@@ -47,18 +76,25 @@ menu = st.sidebar.radio(
     ]
 )
 
-# -----------------------------
+# =====================================================
 # HOME PAGE
-# -----------------------------
+# =====================================================
 if menu == "🏠 Home":
 
     st.title("📊 Customer Segmentation Dashboard")
 
-    st.markdown("""
-    This dashboard analyzes customer behavior using
-    **K-Means Clustering** to identify different customer segments
-    based on Annual Income and Spending Score.
-    """)
+    st.write("""
+This dashboard performs **Customer Segmentation** using the
+**K-Means Clustering Algorithm**.
+
+The segmentation is based on:
+
+- Age
+- Annual Income
+- Spending Score
+
+Use the sidebar to explore different sections.
+""")
 
     st.divider()
 
@@ -66,28 +102,27 @@ if menu == "🏠 Home":
     total_features = df.shape[1]
     total_clusters = df["Cluster"].nunique()
 
-    col1, col2, col3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
 
-    col1.metric("Total Customers", total_customers)
-    col2.metric("Total Features", total_features)
-    col3.metric("Total Clusters", total_clusters)
+    c1.metric("Total Customers", total_customers)
+    c2.metric("Total Features", total_features)
+    c3.metric("Total Clusters", total_clusters)
 
     st.divider()
 
     st.subheader("Dataset Preview")
+    st.dataframe(df.head(), use_container_width=True)
 
-    st.dataframe(df.head())
-
-# -----------------------------
+# =====================================================
 # DATA OVERVIEW
-# -----------------------------
+# =====================================================
 elif menu == "📊 Data Overview":
 
     st.title("📊 Data Overview")
 
     st.subheader("Dataset")
 
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
 
     st.divider()
 
@@ -104,112 +139,151 @@ elif menu == "📊 Data Overview":
     st.divider()
 
     st.subheader("Data Types")
-
     st.write(df.dtypes)
 
     st.divider()
 
     st.subheader("Statistical Summary")
+    st.dataframe(df.describe(), use_container_width=True)
 
-    st.dataframe(df.describe())
 
 
-# -----------------------------
+# =====================================================
 # EDA PAGE
-# -----------------------------
+# =====================================================
 elif menu == "📈 EDA":
 
     st.title("📈 Exploratory Data Analysis")
 
-    # -----------------------------
+    # -------------------------
     # Age Distribution
-    # -----------------------------
+    # -------------------------
     st.subheader("Age Distribution")
 
     fig, ax = plt.subplots(figsize=(8,5))
-    sns.histplot(df["Age"], bins=20, kde=True, ax=ax)
+
+    sns.histplot(
+        data=df,
+        x="Age",
+        bins=20,
+        kde=True,
+        color="royalblue",
+        ax=ax
+    )
+
     ax.set_xlabel("Age")
     ax.set_ylabel("Count")
 
     st.pyplot(fig)
 
-    # -----------------------------
+    # -------------------------
     # Gender Distribution
-    # -----------------------------
+    # -------------------------
     st.subheader("Gender Distribution")
 
     fig, ax = plt.subplots(figsize=(6,4))
-    sns.countplot(data=df, x="Gender", ax=ax)
+
+    sns.countplot(
+        data=df,
+        x="Gender",
+        palette="Set2",
+        ax=ax
+    )
 
     st.pyplot(fig)
 
-    # -----------------------------
+    # -------------------------
     # Annual Income Distribution
-    # -----------------------------
+    # -------------------------
     st.subheader("Annual Income Distribution")
 
     fig, ax = plt.subplots(figsize=(8,5))
-    sns.histplot(df["Annual Income (k$)"], bins=20, kde=True, ax=ax)
+
+    sns.histplot(
+        data=df,
+        x="Annual Income (k$)",
+        bins=20,
+        kde=True,
+        color="green",
+        ax=ax
+    )
 
     st.pyplot(fig)
 
-    # -----------------------------
+    # -------------------------
     # Spending Score Distribution
-    # -----------------------------
+    # -------------------------
     st.subheader("Spending Score Distribution")
 
     fig, ax = plt.subplots(figsize=(8,5))
-    sns.histplot(df["Spending Score (1-100)"], bins=20, kde=True, ax=ax)
+
+    sns.histplot(
+        data=df,
+        x="Spending Score (1-100)",
+        bins=20,
+        kde=True,
+        color="orange",
+        ax=ax
+    )
 
     st.pyplot(fig)
 
-    # -----------------------------
+    # -------------------------
     # Correlation Heatmap
-    # -----------------------------
+    # -------------------------
     st.subheader("Correlation Heatmap")
 
-    fig, ax = plt.subplots(figsize=(7,5))
+    fig, ax = plt.subplots(figsize=(8,6))
 
     sns.heatmap(
         df.corr(numeric_only=True),
         annot=True,
         cmap="Blues",
+        linewidths=0.5,
         ax=ax
     )
 
     st.pyplot(fig)
 
-    # -----------------------------
-    # Box Plot
-    # -----------------------------
-    st.subheader("Annual Income Boxplot")
+    # -------------------------
+    # Boxplots
+    # -------------------------
+    col1, col2 = st.columns(2)
 
-    fig, ax = plt.subplots(figsize=(6,4))
-    sns.boxplot(
-        data=df,
-        y="Annual Income (k$)",
-        ax=ax
-    )
+    with col1:
 
-    st.pyplot(fig)
+        st.subheader("Annual Income Boxplot")
 
-    st.subheader("Spending Score Boxplot")
+        fig, ax = plt.subplots(figsize=(6,4))
 
-    fig, ax = plt.subplots(figsize=(6,4))
-    sns.boxplot(
-        data=df,
-        y="Spending Score (1-100)",
-        ax=ax
-    )
+        sns.boxplot(
+            y=df["Annual Income (k$)"],
+            color="skyblue",
+            ax=ax
+        )
 
-    st.pyplot(fig)
+        st.pyplot(fig)
 
-    # -----------------------------
+    with col2:
+
+        st.subheader("Spending Score Boxplot")
+
+        fig, ax = plt.subplots(figsize=(6,4))
+
+        sns.boxplot(
+            y=df["Spending Score (1-100)"],
+            color="salmon",
+            ax=ax
+        )
+
+        st.pyplot(fig)
+
+    # -------------------------
     # Scatter Plot
-    # -----------------------------
+    # -------------------------
     st.subheader("Income vs Spending Score")
 
-    fig, ax = plt.subplots(figsize=(8,6))
+    fig, ax = plt.subplots(figsize=(9,6))
 
     sns.scatterplot(
         data=df,
@@ -217,27 +291,49 @@ elif menu == "📈 EDA":
         y="Spending Score (1-100)",
         hue="Cluster",
         palette="Set2",
+        s=120,
         ax=ax
     )
 
+    ax.set_title("Customer Segments")
+
     st.pyplot(fig)
 
+    # -------------------------
+    # Pair Plot
+    # -------------------------
+    st.subheader("Pair Plot")
 
-# -----------------------------
+    pair_fig = sns.pairplot(
+        df,
+        vars=[
+            "Age",
+            "Annual Income (k$)",
+            "Spending Score (1-100)"
+        ],
+        hue="Cluster",
+        palette="Set2"
+    )
+
+    st.pyplot(pair_fig)
+
+
+
+# =====================================================
 # CUSTOMER SEGMENTATION PAGE
-# -----------------------------
+# =====================================================
 elif menu == "🤖 Customer Segmentation":
 
     st.title("🤖 Customer Segmentation")
 
     st.write("""
-    The customers have been segmented using the **K-Means Clustering**
-    algorithm based on **Annual Income** and **Spending Score**.
-    """)
+The dataset has been segmented using the **K-Means Clustering Algorithm**
+based on customer Annual Income and Spending Score.
+""")
 
     st.divider()
 
-    # Cluster-wise Customer Count
+    # Cluster Count
     st.subheader("Cluster-wise Customer Count")
 
     cluster_count = (
@@ -271,25 +367,52 @@ elif menu == "🤖 Customer Segmentation":
     st.subheader("Cluster Summary")
 
     summary = df.groupby("Cluster").agg({
-
         "Age":"mean",
         "Annual Income (k$)":"mean",
         "Spending Score (1-100)":"mean"
-
     }).round(2)
+
+    summary.columns = [
+        "Average Age",
+        "Average Income",
+        "Average Spending Score"
+    ]
 
     st.dataframe(summary, use_container_width=True)
 
-# -----------------------------
+    st.divider()
+
+    # Average Metrics
+    st.subheader("Average Customer Metrics by Cluster")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Average Age",
+        round(df["Age"].mean(),1)
+    )
+
+    col2.metric(
+        "Average Income",
+        round(df["Annual Income (k$)"].mean(),1)
+    )
+
+    col3.metric(
+        "Average Spending",
+        round(df["Spending Score (1-100)"].mean(),1)
+    )
+
+
+# =====================================================
 # CLUSTER VISUALIZATION
-# -----------------------------
+# =====================================================
 elif menu == "📉 Cluster Visualization":
 
     st.title("📉 Cluster Visualization")
 
     st.subheader("Income vs Spending Score")
 
-    fig, ax = plt.subplots(figsize=(8,6))
+    fig, ax = plt.subplots(figsize=(9,6))
 
     sns.scatterplot(
         data=df,
@@ -307,6 +430,7 @@ elif menu == "📉 Cluster Visualization":
 
     st.divider()
 
+    # Average Values
     st.subheader("Average Values by Cluster")
 
     avg = df.groupby("Cluster")[[
@@ -318,9 +442,10 @@ elif menu == "📉 Cluster Visualization":
 
     st.divider()
 
-    st.subheader("Customers in Each Cluster")
+    # Pie Chart
+    st.subheader("Cluster Distribution")
 
-    pie = df["Cluster"].value_counts()
+    pie = df["Cluster"].value_counts().sort_index()
 
     fig, ax = plt.subplots(figsize=(6,6))
 
@@ -331,206 +456,223 @@ elif menu == "📉 Cluster Visualization":
         startangle=90
     )
 
-    ax.set_title("Cluster Distribution")
+    ax.set_title("Customer Distribution")
+
+    st.pyplot(fig)
+
+    st.divider()
+
+    # Income by Cluster
+    st.subheader("Income by Cluster")
+
+    fig, ax = plt.subplots(figsize=(8,5))
+
+    sns.boxplot(
+        data=df,
+        x="Cluster",
+        y="Annual Income (k$)",
+        palette="Set3",
+        ax=ax
+    )
+
+    st.pyplot(fig)
+
+    st.divider()
+
+    # Spending Score by Cluster
+    st.subheader("Spending Score by Cluster")
+
+    fig, ax = plt.subplots(figsize=(8,5))
+
+    sns.boxplot(
+        data=df,
+        x="Cluster",
+        y="Spending Score (1-100)",
+        palette="Pastel1",
+        ax=ax
+    )
 
     st.pyplot(fig)
 
 
-
-# -----------------------------
+# =====================================================
 # BUSINESS INSIGHTS
-# -----------------------------
+# =====================================================
 elif menu == "💼 Business Insights":
 
     st.title("💼 Business Insights")
 
-    st.success("Customer Segments Generated Successfully!")
+    st.success("Customer Segmentation Completed Successfully!")
 
     st.divider()
 
     cluster = st.selectbox(
-        "Select Cluster",
+        "Select Customer Cluster",
         sorted(df["Cluster"].unique())
     )
 
-    st.subheader(f"Cluster {cluster}")
-
     cluster_df = df[df["Cluster"] == cluster]
 
-    st.metric("Customers", len(cluster_df))
-
-    st.write("### Average Values")
+    st.subheader(f"Cluster {cluster} Overview")
 
     col1, col2, col3 = st.columns(3)
 
     col1.metric(
-        "Average Age",
-        round(cluster_df["Age"].mean(),1)
+        "Customers",
+        len(cluster_df)
     )
 
     col2.metric(
         "Average Income",
-        round(cluster_df["Annual Income (k$)"].mean(),1)
+        round(cluster_df["Annual Income (k$)"].mean(), 2)
     )
 
     col3.metric(
         "Average Spending",
-        round(cluster_df["Spending Score (1-100)"].mean(),1)
+        round(cluster_df["Spending Score (1-100)"].mean(), 2)
     )
 
     st.divider()
 
-    # Business Recommendation
+    st.subheader("Average Age")
+
+    st.metric(
+        "Average Age",
+        round(cluster_df["Age"].mean(), 2)
+    )
+
+    st.divider()
+
+    st.subheader("Business Recommendation")
 
     if cluster == 0:
 
         st.info("""
-### Premium Customers
+### 🏆 Premium Customers
 
-✔ High Income
+- High Income
+- High Spending
 
-✔ High Spending
+**Recommendation**
 
-### Recommendation
-
-• VIP Membership
-
-• Premium Products
-
-• Loyalty Rewards
-
-• Personalized Offers
-
-• Early Product Access
+- VIP Membership
+- Loyalty Rewards
+- Premium Products
+- Exclusive Offers
+- Personalized Marketing
 """)
 
     elif cluster == 1:
 
         st.warning("""
-### High Income - Low Spending
+### 💰 High Income - Low Spending
 
-### Recommendation
+**Recommendation**
 
-• Personalized Discounts
-
-• Product Recommendation
-
-• Premium Membership
-
-• Email Marketing
-
-• Special Coupons
+- Targeted Discounts
+- Product Bundles
+- Personalized Recommendations
+- Email Marketing
+- Festival Offers
 """)
 
     elif cluster == 2:
 
         st.success("""
-### Budget Customers
+### 💵 Budget Customers
 
-### Recommendation
+**Recommendation**
 
-• Affordable Products
-
-• Combo Offers
-
-• Festival Discounts
-
-• Cashback
-
-• Coupons
+- Affordable Products
+- Cashback Offers
+- Combo Deals
+- Coupons
+- Seasonal Discounts
 """)
 
     elif cluster == 3:
 
         st.info("""
-### Active Shoppers
+### 🛍 Active Customers
 
-### Recommendation
+**Recommendation**
 
-• Loyalty Program
-
-• Referral Rewards
-
-• Personalized Suggestions
-
-• Mobile Notifications
-
-• Reward Points
+- Reward Points
+- Referral Program
+- Mobile Notifications
+- Membership Benefits
+- Early Product Access
 """)
 
     else:
 
         st.success("""
-### Regular Customers
+### 👥 Regular Customers
 
-### Recommendation
+**Recommendation**
 
-• Customer Engagement
-
-• Membership Benefits
-
-• Email Campaign
-
-• Birthday Offers
-
-• Customer Feedback Program
+- Customer Engagement
+- Feedback Program
+- Birthday Offers
+- Personalized Emails
+- Loyalty Program
 """)
 
     st.divider()
 
     st.subheader("Customers in Selected Cluster")
 
-    st.dataframe(cluster_df)
+    st.dataframe(cluster_df, use_container_width=True)
 
 
-# -----------------------------
+# =====================================================
 # DOWNLOAD PAGE
-# -----------------------------
+# =====================================================
 elif menu == "📥 Download Data":
 
-    st.title("📥 Download Clustered Dataset")
+    st.title("📥 Download Dataset")
 
-    st.write(
-        "Download the clustered customer dataset."
-    )
+    st.write("Download the clustered customer dataset as CSV.")
 
-    csv = df.to_csv(index=False)
+    csv = df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-
         label="⬇ Download CSV",
-
         data=csv,
-
         file_name="clustered_customers.csv",
-
         mime="text/csv"
-
     )
 
     st.divider()
 
     st.subheader("Dataset Preview")
 
-    st.dataframe(df.head())
+    st.dataframe(df.head(), use_container_width=True)
 
 
-# -----------------------------
+# =====================================================
 # FOOTER
-# -----------------------------
+# =====================================================
+
 st.divider()
 
 st.markdown(
 """
-<center>
+<hr>
+
+<div style='text-align:center;'>
+
+### 📊 Customer Segmentation Dashboard
 
 Developed by **Rohit Kumar Prajapati**
 
-Customer Segmentation using K-Means Clustering
+**Technology Used**
 
-Streamlit Dashboard
+Python • Streamlit • Pandas • NumPy • Matplotlib • Seaborn • Scikit-learn
 
-</center>
+© 2026 All Rights Reserved
+
+</div>
 """,
 unsafe_allow_html=True
 )
