@@ -4,6 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+# =====================================================
+# LOAD DATA
+# =====================================================
+@st.cache_data
+def load_data():
+    return pd.read_csv("clustered_customers.csv")
+
+df = load_data()
+
+
 # =====================================================
 # PAGE CONFIGURATION
 # =====================================================
