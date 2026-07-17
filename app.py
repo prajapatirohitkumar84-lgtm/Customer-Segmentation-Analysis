@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 df = pd.read_csv(r"D:\Project (Navodita infotech)\Customer Segmentation Analysis-[Rohit Kumar Prajapati]\train.csv")
 
 st.title("Customer Segmentation Dashboard")
 st.dataframe(df)
 
-
-import streamlit as st
-import pandas as pd
-import numpy as np
 
 # -----------------------------
 # Page Configuration
@@ -112,9 +112,6 @@ elif menu == "📊 Data Overview":
     st.subheader("Statistical Summary")
 
     st.dataframe(df.describe())
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 # -----------------------------
