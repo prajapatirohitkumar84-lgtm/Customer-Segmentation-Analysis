@@ -6,16 +6,6 @@ import seaborn as sns
 
 
 # =====================================================
-# LOAD DATA
-# =====================================================
-@st.cache_data
-def load_data():
-    return pd.read_csv("clustered_customers.csv")
-
-df = load_data()
-
-
-# =====================================================
 # PAGE CONFIGURATION
 # =====================================================
 st.set_page_config(
@@ -60,7 +50,7 @@ footer{
 # =====================================================
 @st.cache_data
 def load_data():
-    return pd.read_csv("clustered_customers.csv")
+    return pd.read_csv("train.csv")
 
 df = load_data()
 
