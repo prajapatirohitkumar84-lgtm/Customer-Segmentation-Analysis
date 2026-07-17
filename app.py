@@ -44,15 +44,34 @@ footer{
 }
 </style>
 """, unsafe_allow_html=True)
+# ===================clustring==========================
 
+
+from sklearn.cluster import KMeans
+
+df = pd.read_csv("train.csv")
+
+X = df[["Annual Income (k$)", "Spending Score (1-100)"]]
+
+kmeans = KMeans(
+    n_clusters=5,
+    random_state=42,
+    n_init=10
+)
+
+df["Cluster"] = kmeans.fit_predict(X)
+
+df.to_csv("clustered_customers.csv", index=False)
+
+df = pd.read_csv("clustered_customers.csv")
 # =====================================================
 # LOAD DATA
 # =====================================================
-@st.cache_data
-def load_data():
-    return pd.read_csv("train.csv")
+#@st.cache_data
+#def load_data():
+#   return pd.read_csv("train.csv")
 
-df = load_data()
+#df = load_data()
 
 # =====================================================
 # SIDEBAR
